@@ -1,0 +1,196 @@
+{% extends "base_layout.html" %}
+{% block title %}My Library - LMS{% endblock %}
+
+{% block content %}
+<style>
+    /* Shelf Styling */
+    .user-welcome {
+        color: white;
+        text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        animation: slideInDown 0.5s ease;
+    }
+
+    .shelf-container {
+        background: rgba(255, 255, 255, 0.98);
+        border-radius: 24px;
+        padding: 35px;
+        box-shadow: 0 20px 50px rgba(0,0,0,0.2);
+        margin-bottom: 40px;
+        border: 1px solid rgba(255,255,255,0.3);
+    }
+
+    .book-card-row {
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        border-radius: 15px;
+        border-bottom: 1px solid #f0f0f0;
+    }
+
+    .book-card-row:hover {
+        background-color: #fcfaff !important;
+        transform: translateX(10px);
+    }
+
+    /* Action Buttons */
+    .btn-action {
+        border-radius: 12px;
+        font-weight: 600;
+        padding: 8px 16px;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        transition: all 0.2s;
+    }
+
+    .btn-pdf { background: #6c5ce7; color: white; border: none; }
+    .btn-pdf:hover { background: #5849c4; color: white; box-shadow: 0 4px 12px rgba(108, 92, 231, 0.3); }
+
+    .btn-audio { background: #ff7675; color: white; border: none; }
+    .btn-audio:hover { background: #d63031; color: white; box-shadow: 0 4px 12px rgba(255, 118, 117, 0.3); }
+
+    .status-pill {
+        padding: 5px 15px;
+        border-radius: 50px;
+        font-size: 0.75rem;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+    }
+
+    /* Sub-nav styling */
+    .glass-nav {
+        background: rgba(255, 255, 255, 0.15);
+        backdrop-filter: blur(15px);
+        border-radius: 20px;
+        padding: 15px 25px;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .nav-link-custom {
+        color: white;
+        text-decoration: none;
+        font-weight: 600;
+        padding: 8px 16px;
+        border-radius: 10px;
+        transition: background 0.3s;
+    }
+
+    .nav-link-custom:hover, .nav-link-custom.active {
+        background: rgba(255, 255, 255, 0.2);
+        color: #fff;
+    }
+
+    @keyframes slideInDown {
+        from { transform: translateY(-20px); opacity: 0; }
+        to { transform: translateY(0); opacity: 1; }
+    }
+</style>
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div class="user-welcome">
+        <h1 class="fw-bold mb-1">🔖 My Bookshelf</h1>
+        <p class="mb-0 opacity-75">You have {{ books|length }} books in your possession</p>
+    </div>
+    <a href="/logout" class="btn btn-outline-light rounded-pill px-4">Sign Out</a>
+</div>
+
+<div class="container-fluid p-0">
+    
+    <div class="shelf-container">
+        <div class="d-flex align-items-center mb-4">
+            <div class="bg-primary rounded-circle p-2 me-3">
+                <span class="fs-4 text-white">📖</span>
+            </div>
+            <h3 class="fw-bold m-0" style="color: #2d3436;">Current Reading List</h3>
+        </div>
+
+        {% if books|length >= 1 %}
+        <div class="table-responsive">
+            <table class="table align-middle border-0">
+                <thead class="text-muted small text-uppercase" style="border-bottom: 2px solid #f0f0f0;">
+                    <tr>
+                        <th class="ps-4">Book Details</th>
+                        <th>Timeline</th>
+                        <th class="text-center">Digital Access</th>
+                        <th class="text-end pe-4">Options</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for request, book, section in books %}
+                    <tr class="book-card-row">
+                        <td class="ps-4 py-4">
+                            <div class="fw-bold text-dark fs-5">{{ book.book_name }}</div>
+                            <div class="text-muted">{{ book.author_1 }}</div>
+                            <span class="badge bg-light text-primary border border-primary-subtle mt-1">{{ section.name }}</span>
+                        </td>
+                        <td>
+                            <div class="small"><strong>Issued:</strong> {{ book.issue_date.strftime('%b %d, %Y') }}</div>
+                            <div class="small text-danger fw-bold"><strong>Due:</strong> {{ book.return_date.strftime('%b %d, %Y') }}</div>
+                        </td>
+                        <td class="text-center">
+                            <div class="d-flex justify-content-center gap-2">
+                                {% if payment_status.get(book.id, False) %}
+                                    <a href="{{ url_for('initiate_download', book_id=book.id) }}" class="btn-action btn-pdf">
+                                        <span>📥</span> Download PDF
+                                    </a>
+                                {% else %}
+                                    <a href="{{ url_for('payment_gateway', book_id=book.id) }}" class="btn btn-sm btn-dark rounded-pill">
+                                        💳 Buy Digital Copy
+                                    </a>
+                                {% endif %}
+                                <a href="{{url_for('text_to_speech', book_id=book.id)}}" class="btn-action btn-audio">
+                                    <span>🎧</span> Listen
+                                </a>
+                            </div>
+                        </td>
+                        <td class="text-end pe-4">
+                            <a href="{{ url_for('review_book', book_id=book.id) }}" class="btn btn-outline-secondary btn-sm rounded-pill px-3">
+                                ⭐ Write Review
+                            </a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="text-center py-5">
+            <img src="https://cdn-icons-png.flaticon.com/512/2436/2436702.png" alt="Empty" style="width: 80px; opacity: 0.3;" class="mb-3">
+            <h5 class="text-muted">Your bookshelf is empty!</h5>
+            <a href="/student_dashboard/all_books" class="btn btn-primary rounded-pill px-4 mt-2">Find a Book</a>
+        </div>
+        {% endif %}
+    </div>
+
+    <div class="shelf-container" style="background: rgba(255, 255, 255, 0.7);">
+        <h4 class="fw-bold mb-4 text-muted">⏳ Processing Requests</h4>
+        {% if pending_books|length >= 1 %}
+        <div class="table-responsive">
+            <table class="table align-middle">
+                <tbody>
+                    {% for request, book, section in pending_books %}
+                    <tr class="book-card-row">
+                        <td style="width: 60px;" class="ps-4">
+                            <div class="rounded-circle bg-warning-subtle d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">
+                                🕒
+                            </div>
+                        </td>
+                        <td>
+                            <div class="fw-bold">{{ book.book_name }}</div>
+                            <div class="small text-muted">{{ section.name }} • Request ID: #{{ request.id }}</div>
+                        </td>
+                        <td class="text-end pe-4">
+                            <span class="status-pill bg-warning-subtle text-warning-emphasis border border-warning-subtle fw-bold">
+                                Pending Librarian Approval
+                            </span>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <p class="text-center text-muted m-0 italic small">No pending requests at this time.</p>
+        {% endif %}
+    </div>
+
+</div>
+{% endblock %}

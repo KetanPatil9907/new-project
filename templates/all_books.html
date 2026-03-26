@@ -1,0 +1,172 @@
+{% extends "base_layout.html" %}
+{% block title %}Explore Library - LMS{% endblock %}
+
+{% block content %}
+
+<style>
+    /* Page-only styles */
+    .catalog-header {
+        color: white;
+        text-shadow: 0 2px 12px rgba(0,0,0,0.25);
+    }
+
+    .book-card {
+        background: white;
+        border-radius: 22px;
+        border: 1px solid rgba(0,0,0,0.05);
+        transition: all 0.35s ease;
+        overflow: hidden;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        box-shadow: 0 8px 25px rgba(0,0,0,0.08);
+    }
+
+    .book-card:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 20px 45px rgba(0,0,0,0.18);
+    }
+
+    .book-cover {
+        height: 160px;
+        background: var(--primary-gradient);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        position: relative;
+    }
+
+    .section-pill {
+        background: rgba(118,75,162,0.1);
+        color: var(--primary-color);
+        font-size: 0.75rem;
+        padding: 6px 14px;
+        border-radius: 10px;
+        font-weight: 600;
+    }
+
+    .rating-badge {
+        background: #fff9db;
+        color: #947600;
+        padding: 4px 12px;
+        border-radius: 8px;
+        font-weight: 700;
+        font-size: 0.85rem;
+        border: 1px solid #ffe066;
+    }
+
+    .search-bar-wrapper {
+        background: var(--glass-bg);
+        backdrop-filter: blur(10px);
+        border-radius: 50px;
+        padding: 10px 18px;
+        border: 1px solid rgba(255,255,255,0.4);
+    }
+</style>
+
+
+<!-- Header -->
+<div class="d-flex justify-content-between align-items-center mb-4 flex-wrap gap-3">
+    <div class="catalog-header">
+        <h1 class="fw-bold m-0">📚 Global Catalog</h1>
+        <p class="mb-0 opacity-75">Find your next book, <strong>{{ user.name }}</strong></p>
+    </div>
+</div>
+
+<!-- Search -->
+<div class="search-bar-wrapper mb-4 d-flex justify-content-between align-items-center flex-wrap gap-3">
+    <form method="POST" action="/search_books" class="d-flex gap-2 w-100">
+        <input type="text" name="query"
+               placeholder="Search title, author..."
+               class="form-control input-style rounded-pill">
+
+        <select name="filter" class="form-select input-style rounded-pill" style="max-width: 130px;">
+            <option value="book_name">Title</option>
+            <option value="author">Author</option>
+            <option value="section">Section</option>
+            <option value="all">All</option>
+        </select>
+
+        <button type="submit" class="btn btn-gradient rounded-pill px-4">Find</button>
+    </form>
+</div>
+
+<!-- Flash Messages -->
+{% with messages = get_flashed_messages() %}
+  {% if messages %}
+    {% for message in messages %}
+      <div class="alert alert-warning border-0 shadow-sm rounded-pill py-2 px-4 text-center animate-fade">
+        ✨ {{ message }}
+      </div>
+    {% endfor %}
+  {% endif %}
+{% endwith %}
+
+<!-- Books Grid -->
+<div class="row g-4 pb-5">
+    {% for book, section in books %}
+    <div class="col-xl-3 col-lg-4 col-md-6">
+        <div class="book-card">
+
+            <div class="book-cover">
+                <span style="font-size: 3.2rem;">📖</span>
+                <span class="badge bg-light text-dark position-absolute bottom-0 mb-2 rounded-pill">
+                    ID: #{{ book.id }}
+                </span>
+            </div>
+
+            <div class="p-4 flex-grow-1 d-flex flex-column">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <span class="section-pill">{{ section.name }}</span>
+                    <span class="rating-badge">★ {{ ratings.get(book.id, '0.0') }}</span>
+                </div>
+
+                <div class="mb-4">
+                    <h5 class="fw-bold mb-1 text-truncate" title="{{ book.book_name }}">
+                        {{ book.book_name }}
+                    </h5>
+                    <p class="text-muted small mb-0">by {{ book.author_1 }}</p>
+                </div>
+
+               <div class="mt-auto">
+                    <!--<div class="mb-2 d-grid">
+                        {% if payment_status.get(book.id, False) %}
+                            <a href="{{ url_for('initiate_download', book_id=book.id) }}"
+                               class="btn btn-gradient rounded-pill">
+                                Download PDF
+                            </a>
+                        {% else %}
+                            <a href="{{ url_for('payment_gateway', book_id=book.id) }}"
+                               class="btn btn-outline-dark rounded-pill">
+                                Unlock PDF
+                            </a> 
+                        {% endif %}
+                    </div>   -->
+
+                    <form action="/request_book/{{ book.id }}" method="post" class="d-grid">
+                        {% if book.requested %}
+                            <button type="button" disabled
+                                    class="btn btn-light rounded-pill text-muted border">
+                                Request Pending
+                            </button>
+                        {% else %}
+                            <button type="submit"
+                                    class="btn btn-success rounded-pill">
+                                Borrow Now
+                            </button>
+                        {% endif %}
+                    </form>
+                </div>
+            </div>
+
+        </div>
+    </div>
+    {% else %}
+    <div class="text-center w-100 py-5 text-white">
+        <h4>No books currently available.</h4>
+    </div>
+    {% endfor %}
+</div>
+
+{% endblock %}

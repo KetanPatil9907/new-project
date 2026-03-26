@@ -1,0 +1,162 @@
+{% extends "base_layout.html" %}
+{% block title %}UPI Payment - Library Pro{% endblock %}
+
+{% block content %}
+<style>
+    .payment-container {
+        min-height: 85vh;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        padding: 40px 0;
+    }
+
+    .upi-card {
+        background: #ffffff;
+        border-radius: 30px;
+        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.15);
+        overflow: hidden;
+        border: none;
+        animation: fadeIn 0.5s ease-out;
+    }
+
+    .upi-header {
+        background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+        padding: 35px;
+        color: white;
+        text-align: center;
+    }
+
+    .qr-wrapper {
+        background: white;
+        padding: 15px;
+        border-radius: 20px;
+        display: inline-block;
+        box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+        margin-bottom: 20px;
+        border: 1px solid #f1f5f9;
+    }
+
+    .amount-display {
+        font-size: 2.5rem;
+        font-weight: 800;
+        color: #1e293b;
+        margin: 10px 0;
+    }
+
+    .vpa-input {
+        border-radius: 12px;
+        border: 2px solid #f1f5f9;
+        padding: 14px 18px;
+        font-weight: 600;
+        background-color: #f8fafc;
+        transition: all 0.3s ease;
+    }
+
+    .vpa-input:focus {
+        background-color: #fff;
+        border-color: #4f46e5;
+        box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.1);
+        outline: none;
+    }
+
+    .btn-pay {
+        background: #1e293b;
+        color: white;
+        border: none;
+        padding: 16px;
+        border-radius: 12px;
+        font-weight: 700;
+        letter-spacing: 0.5px;
+        transition: all 0.3s;
+    }
+
+    .btn-pay:hover {
+        background: #0f172a;
+        transform: translateY(-2px);
+    }
+
+    .secure-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 6px 12px;
+        background: #f0fdf4;
+        color: #166534;
+        border-radius: 100px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        margin-top: 15px;
+    }
+</style>
+
+<div class="container payment-container">
+    <div class="col-lg-5 col-md-8">
+        
+        <div class="upi-card">
+            <div class="upi-header">
+                <h3 class="fw-bold mb-1">UPI Checkout</h3>
+                <p class="small opacity-80 mb-0">Secure Transaction Gateway</p>
+                
+                <div class="secure-badge">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" fill="currentColor" class="bi bi-shield-lock-fill" viewBox="0 0 16 16">
+                        <path fill-rule="evenodd" d="M8 0c-.69 0-1.843.265-2.928.56-1.11.3-2.229.655-2.887.87a1.54 1.54 0 0 0-1.044 1.262c-.596 4.477.787 7.795 2.465 9.99a11.777 11.777 0 0 0 2.517 2.453c.386.273.744.482 1.048.625.28.132.581.24.829.24s.548-.108.829-.24a7.159 7.159 0 0 0 1.048-.625 11.775 11.775 0 0 0 2.517-2.453c1.678-2.195 3.061-5.513 2.465-9.99a1.541 1.541 0 0 0-1.044-1.263 62.467 62.467 0 0 0-2.887-.87C9.843.266 8.69 0 8 0m0 5a1.5 1.5 0 0 1 .5 2.915V10a.5.5 0 0 1-1 0V7.915A1.5 1.5 0 0 1 8 5"/>
+                    </svg>
+                    PCI-DSS COMPLIANT
+                </div>
+            </div>
+
+            <div class="p-4 p-md-5 text-center">
+                <div class="qr-wrapper">
+                    <img src="https://api.qrserver.com/v1/create-qr-code/?size=150x150&data=upi://pay?pa=library@bank&pn=LMS&am=399&cu=INR" 
+                         alt="UPI QR Code" 
+                         style="width: 160px; height: 160px;">
+                </div>
+                
+                <div class="amount-display">₹399.00</div>
+                <p class="text-muted small mb-4">Pay to: <span class="text-dark fw-bold">Library Pro Services</span></p>
+
+                <hr class="my-4 opacity-50">
+
+                <form action="/upi_payment/{{book_id}}" method="POST" class="text-start">
+                    <div class="mb-4">
+                        <label class="form-label fw-bold small text-muted text-uppercase tracking-wider">UPI ID / VPA</label>
+                        <input type="text" id="upi_id" name="upi_id" 
+                               class="form-control vpa-input" 
+                               placeholder="e.g. user@okhdfcbank" 
+                               required 
+                               pattern="[a-zA-Z0-9.\-_]{2,256}@[a-zA-Z]{2,64}">
+                        <div class="form-text text-center mt-3">
+                            <span class="badge bg-light text-dark border fw-normal">Verified Merchant: LMS_TRUSTED</span>
+                        </div>
+                    </div>
+
+                    <input type="hidden" name="amount" value="399">
+
+                    <button type="submit" class="btn btn-pay w-100 shadow-lg">
+                        Proceed to Pay ₹399
+                    </button>
+                    
+                    <div class="text-center mt-4">
+                        <a href="/payment_gateway/{{book_id}}" class="text-decoration-none text-muted small hover-primary">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" fill="currentColor" class="bi bi-arrow-left me-1" viewBox="0 0 16 16">
+                                <path fill-rule="evenodd" d="M15 8a.5.5 0 0 0-.5-.5H2.707l3.147-3.146a.5.5 0 1 0-.708-.708l-4 4a.5.5 0 0 0 0 .708l4 4a.5.5 0 0 0 .708-.708L2.707 8.5H14.5A.5.5 0 0 0 15 8"/>
+                            </svg>
+                            Back to Payment Options
+                        </a>
+                    </div>
+                </form>
+            </div>
+
+            <div class="bg-light p-4 text-center border-top">
+                <p class="text-muted extra-small mb-3 text-uppercase fw-bold" style="font-size: 0.65rem; letter-spacing: 1px;">Supported UPI Apps</p>
+                <div class="d-flex justify-content-center align-items-center gap-4 opacity-75">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/c7/Google_Pay_Logo.svg/512px-Google_Pay_Logo.svg.png" height="18" alt="GPay">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/e1/UPI-Logo.png/640px-UPI-Logo.png" height="15" alt="UPI">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/2/24/Paytm_Logo_%28standalone%29.svg/1200px-Paytm_Logo_%28standalone%29.svg.png" height="15" alt="Paytm">
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

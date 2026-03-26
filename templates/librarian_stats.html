@@ -1,0 +1,205 @@
+{% extends "base_layout.html" %}
+{% block title %}Library Analytics - Librarian Stats{% endblock %}
+
+{% block content %}
+<style>
+    /* Analytics Dashboard Styling */
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        gap: 20px;
+        margin-bottom: 30px;
+    }
+
+    .kpi-card {
+        background: white;
+        padding: 20px;
+        border-radius: 20px;
+        box-shadow: 0 10px 20px rgba(0,0,0,0.05);
+        border-bottom: 5px solid #764ba2;
+        transition: transform 0.3s ease;
+    }
+
+    .kpi-card:hover { transform: translateY(-5px); }
+    .kpi-label { font-size: 0.8rem; text-transform: uppercase; color: #6c757d; font-weight: 700; }
+    .kpi-value { font-size: 1.8rem; font-weight: 800; color: #2d3436; }
+
+    .table-container {
+        background: white;
+        border-radius: 20px;
+        padding: 25px;
+        box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+        margin-bottom: 40px;
+        border: 1px solid rgba(0,0,0,0.05);
+    }
+
+    .custom-table thead th {
+        background-color: #f8f9fa;
+        text-transform: uppercase;
+        font-size: 0.75rem;
+        letter-spacing: 1px;
+        padding: 15px;
+        border: none;
+        color: #636e72;
+    }
+
+    .custom-table td { 
+        padding: 15px; 
+        vertical-align: middle; 
+        border-top: 1px solid #f1f1f1;
+        font-size: 0.9rem;
+    }
+
+    .status-badge {
+        padding: 6px 14px;
+        border-radius: 50px;
+        font-size: 0.75rem;
+        font-weight: 700;
+    }
+    .badge-allotted { background: #dff9fb; color: #0984e3; }
+    .badge-free { background: #ebfbee; color: #27ae60; }
+
+    .sub-nav {
+        background: rgba(255,255,255,0.1);
+        backdrop-filter: blur(10px);
+        border-radius: 15px;
+        padding: 12px 20px;
+        border: 1px solid rgba(255,255,255,0.2);
+    }
+</style>
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2 class="fw-bold text-white mb-0">📊 Library Analytics</h2>
+    <div class="d-flex gap-2">
+        <a href="/librarian_dashboard" class="btn btn-light rounded-pill px-4 shadow-sm">Back to Dashboard</a>
+        <a href="/logout" class="btn btn-danger rounded-pill px-4 shadow-sm">Logout</a>
+    </div>
+</div>
+
+<div class="stats-grid">
+    <div class="kpi-card">
+        <div class="kpi-label">Total Books</div>
+        <div class="kpi-value">{{ books|length }}</div>
+    </div>
+    <!--<div class="kpi-card" style="border-color: #00b894;">
+        <div class="kpi-label">Active Loans</div>
+        <div class="kpi-value">{{ books_data|length }}</div>
+    </div>-->
+    <div class="kpi-card" style="border-color: #fab1a0;">
+        <div class="kpi-label">Total Users</div>
+        <div class="kpi-value">{{ student_data|length - 1 if student_data|length > 0 else 0 }}</div>
+    </div>
+</div>
+
+<div class="container-fluid p-0">
+    
+    <div class="table-container">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h4 class="fw-bold text-dark m-0">📚 Master Catalog</h4>
+            <span class="badge bg-primary rounded-pill">{{ books|length }} Items</span>
+        </div>
+        {% if books|length >= 1 %}
+        <div class="table-responsive">
+            <table class="table custom-table">
+                <thead>
+                    <tr>
+                        <th>Reference</th>
+                        <th>Book Title</th>
+                        <th>Author</th>
+                        <th>Section</th>
+                        <th>Current Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for book, section in books %}
+                    <tr>
+                        <td class="text-muted">#LB-{{ book.id }}</td>
+                        <td><span class="fw-bold text-dark">{{ book.book_name }}</span></td>
+                        <td>{{ book.author_1 }}</td>
+                        <td><span class="badge bg-light text-secondary border">{{ section.name }}</span></td>
+                        <td>
+                            {% if book.requested %}
+                                <span class="status-badge badge-allotted">● In Circulation</span>
+                            {% else %}
+                                <span class="status-badge badge-free">● On Shelf</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+            <div class="text-center py-5 text-muted"><h5>No books cataloged yet.</h5></div>
+        {% endif %}
+    </div>
+
+    <!--<div class="table-container" style="border-left: 8px solid #00b894;">
+        <h4 class="fw-bold mb-4 text-dark">🤝 Circulation Management</h4>
+        {% if books_data|length >= 1 %}
+        <div class="table-responsive">
+            <table class="table custom-table">
+                <thead class="table-light">
+                    <tr>
+                        <th>Title</th>
+                        <th>Borrower Details</th>
+                        <th>Issued On</th>
+                        <th>Due Date</th>
+                        <th class="text-end">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for request, student, book in books_data %}
+                    <tr>
+                        <td><strong>{{ book.book_name }}</strong></td>
+                        <td>
+                            <div class="fw-bold">{{ student.name }} {{ student.surname }}</div>
+                            <small class="text-muted">Roll: {{ student.rollno }}</small>
+                        </td>
+                        <td>{{ book.issue_date.strftime('%d %b, %Y') }}</td>
+                        <td><span class="text-danger fw-bold">{{ book.return_date.strftime('%d %b, %Y') }}</span></td>
+                        <td class="text-end">
+                            <a href="{{ url_for('revoke_permission', book_id=book.id) }}" 
+                               class="btn btn-sm btn-outline-danger rounded-pill px-3 fw-bold">Revoke Access</a>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+            <div class="text-center py-5 text-muted"><h5>No active borrowings at the moment.</h5></div>
+        {% endif %}
+    </div>-->
+
+    <div class="table-container">
+        <h4 class="fw-bold mb-4 text-dark">👥 Member Registry</h4>
+        {% if student_data|length >= 1 %}
+        <div class="table-responsive">
+            <table class="table custom-table">
+                <thead>
+                    <tr>
+                        <th>Member ID</th>
+                        <th>Credentials</th>
+                        <th>Full Name</th>
+                        <th>Gender</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for student in student_data %}
+                        {% if not student.is_librarian %}
+                        <tr>
+                            <td>#USR-{{ student.id }}</td>
+                            <td><code class="text-primary fw-bold">{{ student.rollno }}</code></td>
+                            <td>{{ student.name }} {{ student.surname }}</td>
+                            <td>{{ student.gender }}</td>
+                        </tr>
+                        {% endif %}
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

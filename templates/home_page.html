@@ -1,0 +1,685 @@
+{% extends "base_layout.html" %}
+{% block title %}Welcome - Digital Library Pro{% endblock %}
+
+{% block content %}
+<style>
+    /* Animated Gradient Background */
+    @keyframes gradientShift {
+        0%, 100% { background-position: 0% 50%; }
+        50% { background-position: 100% 50%; }
+    }
+    
+    body {
+        background: linear-gradient(-45deg, #4e54c8, #8f94fb, #667eea, #764ba2);
+        background-size: 400% 400%;
+        animation: gradientShift 15s ease infinite;
+        min-height: 100vh;
+        margin: 0;
+        overflow-x: hidden;
+    }
+
+    /* Floating Particles Background */
+    .particles-container {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        pointer-events: none;
+        z-index: -1;
+    }
+
+    .particle {
+        position: absolute;
+        background: rgba(255, 255, 255, 0.1);
+        border-radius: 50%;
+        animation: floatParticle linear infinite;
+    }
+
+    @keyframes floatParticle {
+        0% {
+            transform: translateY(100vh) translateX(0) rotate(0deg);
+            opacity: 0;
+        }
+        10% {
+            opacity: 0.5;
+        }
+        90% {
+            opacity: 0.5;
+        }
+        100% {
+            transform: translateY(-100px) translateX(100px) rotate(360deg);
+            opacity: 0;
+        }
+    }
+
+    .welcome-container {
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        text-align: center;
+        padding: 20px;
+        position: relative;
+    }
+
+    /* Glitch Text Effect */
+    .main-title {
+        font-size: clamp(2.5rem, 8vw, 4rem);
+        font-weight: 800;
+        color: white;
+        text-shadow: 
+            0.05em 0 0 rgba(255, 0, 0, 0.5),
+            -0.025em -0.05em 0 rgba(0, 255, 0, 0.5),
+            0.025em 0.05em 0 rgba(0, 0, 255, 0.5);
+        margin-bottom: 0.5rem;
+        letter-spacing: -1.5px;
+        position: relative;
+        animation: glitch 2000ms infinite;
+    }
+
+    @keyframes glitch {
+        0%, 14%, 15%, 49%, 50%, 99%, 100% {
+            text-shadow: 
+                0.05em 0 0 rgba(255, 0, 0, 0.5),
+                -0.025em -0.05em 0 rgba(0, 255, 0, 0.5),
+                0.025em 0.05em 0 rgba(0, 0, 255, 0.5);
+        }
+        15.1%, 49.9% {
+            text-shadow: 
+                -0.05em -0.025em 0 rgba(255, 0, 0, 0.5),
+                0.025em 0.025em 0 rgba(0, 255, 0, 0.5),
+                -0.05em -0.05em 0 rgba(0, 0, 255, 0.5);
+        }
+        50.1%, 99.9% {
+            text-shadow: 
+                0.05em 0.025em 0 rgba(255, 0, 0, 0.5),
+                0.05em 0 0 rgba(0, 255, 0, 0.5),
+                0 -0.05em 0 rgba(0, 0, 255, 0.5);
+        }
+    }
+
+    .title-highlight {
+        color: #ffcc33;
+        position: relative;
+        display: inline-block;
+    }
+
+    .title-highlight::after {
+        content: '';
+        position: absolute;
+        width: 100%;
+        height: 4px;
+        background: linear-gradient(90deg, transparent, #ffcc33, transparent);
+        bottom: -10px;
+        left: 0;
+        animation: highlightPulse 2s infinite;
+    }
+
+    @keyframes highlightPulse {
+        0%, 100% { transform: scaleX(1); opacity: 1; }
+        50% { transform: scaleX(1.2); opacity: 0.8; }
+    }
+
+    .subtitle {
+        color: rgba(255, 255, 255, 0.9);
+        font-size: 1.25rem;
+        margin-bottom: 4rem;
+        max-width: 700px;
+        line-height: 1.6;
+        text-shadow: 0 2px 10px rgba(0,0,0,0.3);
+        animation: fadeInUp 1s ease-out;
+    }
+
+    @keyframes fadeInUp {
+        from {
+            opacity: 0;
+            transform: translateY(30px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    .tagline {
+        background: rgba(255, 255, 255, 0.1);
+        padding: 10px 25px;
+        border-radius: 50px;
+        font-size: 0.85rem;
+        font-weight: 600;
+        color: #ffcc33;
+        display: inline-block;
+        margin-bottom: 20px;
+        border: 1px solid rgba(255, 204, 51, 0.3);
+        backdrop-filter: blur(10px);
+        animation: taglineFloat 3s ease-in-out infinite;
+        position: relative;
+        overflow: hidden;
+    }
+
+    @keyframes taglineFloat {
+        0%, 100% { transform: translateY(0); }
+        50% { transform: translateY(-5px); }
+    }
+
+    .tagline::before {
+        content: '';
+        position: absolute;
+        top: -2px;
+        left: -2px;
+        right: -2px;
+        bottom: -2px;
+        background: linear-gradient(45deg, #ffcc33, #ff9966, #ffcc33);
+        border-radius: 52px;
+        z-index: -1;
+        opacity: 0;
+        transition: opacity 0.3s;
+    }
+
+    .tagline:hover::before {
+        opacity: 0.5;
+        animation: borderRotate 2s linear infinite;
+    }
+
+    @keyframes borderRotate {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+
+    .divider {
+        width: 80px;
+        height: 5px;
+        background: #ffcc33;
+        margin: 25px auto;
+        border-radius: 10px;
+        box-shadow: 0 0 20px rgba(255, 204, 51, 0.5);
+        position: relative;
+        overflow: hidden;
+        animation: dividerShimmer 2s infinite;
+    }
+
+    .divider::after {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.8), transparent);
+        animation: dividerSlide 2s infinite;
+    }
+
+    @keyframes dividerShimmer {
+        0%, 100% { box-shadow: 0 0 20px rgba(255, 204, 51, 0.5); }
+        50% { box-shadow: 0 0 30px rgba(255, 204, 51, 0.8); }
+    }
+
+    @keyframes dividerSlide {
+        0% { left: -100%; }
+        100% { left: 100%; }
+    }
+
+    .portal-card {
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(20px);
+        border-radius: 30px;
+        padding: 50px 40px;
+        transition: all 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        border: 1px solid rgba(255,255,255,0.4);
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+        position: relative;
+        overflow: hidden;
+        box-shadow: 
+            0 20px 40px rgba(0,0,0,0.1),
+            inset 0 1px 0 rgba(255,255,255,0.6);
+    }
+
+    .portal-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: linear-gradient(45deg, transparent 30%, rgba(255,255,255,0.1) 50%, transparent 70%);
+        transform: translateX(-100%);
+        transition: transform 0.6s;
+    }
+
+    .portal-card:hover::before {
+        transform: translateX(100%);
+    }
+
+    .portal-card:hover {
+        transform: 
+            translateY(-20px) 
+            scale(1.05) 
+            rotateX(5deg) 
+            rotateY(5deg);
+        background: rgba(255, 255, 255, 0.98);
+        box-shadow: 
+            0 40px 80px rgba(0,0,0,0.2),
+            0 0 0 1px rgba(255,255,255,0.1),
+            inset 0 1px 0 rgba(255,255,255,0.8);
+    }
+
+    .icon-box {
+        font-size: 4.5rem;
+        margin-bottom: 25px;
+        display: inline-block;
+        transition: all 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+        filter: drop-shadow(0 5px 15px rgba(0,0,0,0.2));
+        position: relative;
+        animation: iconFloat 3s ease-in-out infinite;
+    }
+
+    @keyframes iconFloat {
+        0%, 100% { transform: translateY(0) rotate(0deg); }
+        50% { transform: translateY(-15px) rotate(5deg); }
+    }
+
+    .portal-card:hover .icon-box {
+        transform: 
+            scale(1.3) 
+            rotate(15deg) 
+            translateY(-10px);
+        animation: none;
+        filter: 
+            drop-shadow(0 10px 20px rgba(0,0,0,0.3))
+            brightness(1.1);
+    }
+
+    .btn-portal {
+        border-radius: 15px;
+        padding: 14px;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        position: relative;
+        overflow: hidden;
+        border: none;
+        transform-style: preserve-3d;
+        perspective: 1000px;
+    }
+
+    .btn-portal::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+        transition: 0.5s;
+    }
+
+    .btn-portal:hover::before {
+        left: 100%;
+    }
+
+    .btn-student {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        border: none;
+        color: white;
+        box-shadow: 0 10px 20px rgba(102, 126, 234, 0.3);
+    }
+
+    .btn-student:hover {
+        transform: 
+            translateY(-5px) 
+            scale(1.05) 
+            rotateX(10deg);
+        box-shadow: 
+            0 15px 30px rgba(102, 126, 234, 0.5),
+            0 5px 15px rgba(102, 126, 234, 0.3);
+        color: white;
+    }
+
+    .btn-outline-secondary {
+        background: transparent;
+        border: 2px solid #6c757d;
+        color: #6c757d;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .btn-outline-secondary::after {
+        content: '';
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        width: 5px;
+        height: 5px;
+        background: rgba(108, 117, 125, 0.5);
+        opacity: 0;
+        border-radius: 100%;
+        transform: scale(1, 1) translate(-50%);
+        transform-origin: 50% 50%;
+    }
+
+    .btn-outline-secondary:hover {
+        background: #6c757d;
+        color: white;
+        transform: translateY(-3px);
+        box-shadow: 0 10px 20px rgba(108, 117, 125, 0.2);
+    }
+
+    .btn-outline-secondary:focus:not(:active)::after {
+        animation: ripple 1s ease-out;
+    }
+
+    @keyframes ripple {
+        0% {
+            transform: scale(0, 0);
+            opacity: 0.5;
+        }
+        100% {
+            transform: scale(40, 40);
+            opacity: 0;
+        }
+    }
+
+    .btn-dark {
+        background: linear-gradient(135deg, #2d3436 0%, #636e72 100%);
+        border: none;
+        color: white;
+        box-shadow: 0 10px 20px rgba(45, 52, 54, 0.3);
+    }
+
+    .btn-dark:hover {
+        transform: 
+            translateY(-5px) 
+            scale(1.05) 
+            rotateX(10deg);
+        box-shadow: 
+            0 15px 30px rgba(45, 52, 54, 0.5),
+            0 5px 15px rgba(45, 52, 54, 0.3);
+        color: white;
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
+        .welcome-container {
+            padding: 10px;
+        }
+        
+        .portal-card {
+            padding: 30px 20px;
+        }
+        
+        .main-title {
+            font-size: clamp(2rem, 6vw, 3rem);
+        }
+        
+        .subtitle {
+            font-size: 1rem;
+            margin-bottom: 2rem;
+        }
+    }
+
+    @media (max-width: 576px) {
+        .portal-card {
+            border-radius: 20px;
+        }
+        
+        .btn-portal {
+            padding: 12px;
+            font-size: 0.9rem;
+        }
+        
+        .icon-box {
+            font-size: 3.5rem;
+        }
+    }
+
+    /* Loading animation for cards */
+    @keyframes cardLoad {
+        from {
+            opacity: 0;
+            transform: translateY(50px) scale(0.9);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+        }
+    }
+
+    .portal-card:nth-child(1) {
+        animation: cardLoad 0.6s ease-out 0.2s both;
+    }
+
+    .portal-card:nth-child(2) {
+        animation: cardLoad 0.6s ease-out 0.4s both;
+    }
+
+    /* Hover sound simulation */
+    .sound-wave {
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        border-radius: 30px;
+        pointer-events: none;
+        opacity: 0;
+        box-shadow: 0 0 0 0 rgba(255,255,255,0.7);
+    }
+
+    .portal-card:hover .sound-wave {
+        animation: soundWave 0.5s ease-out;
+    }
+
+    @keyframes soundWave {
+        0% {
+            opacity: 1;
+            box-shadow: 0 0 0 0 rgba(255,255,255,0.7);
+        }
+        70% {
+            opacity: 0.5;
+            box-shadow: 0 0 0 20px rgba(255,255,255,0);
+        }
+        100% {
+            opacity: 0;
+            box-shadow: 0 0 0 40px rgba(255,255,255,0);
+        }
+    }
+</style>
+
+<!-- Particles Background -->
+<div class="particles-container" id="particles"></div>
+
+<div class="welcome-container animate-fade">
+    <div class="mb-5">
+        <span class="tagline">v3.0 SMART REPOSITORY</span>
+        <h1 class="main-title">Digital Library <span class="title-highlight">Pro</span></h1>
+        <div class="divider"></div>
+        <p class="subtitle mx-auto">Your gateway to a world of knowledge. Explore our extensive collection of digital resources and manage your reading journey with ease.</p>
+    </div>
+
+    <div class="row g-4 w-100 justify-content-center" style="max-width: 1100px;">
+        <div class="col-md-5">
+            <div class="portal-card">
+                <div class="sound-wave"></div>
+                <div class="icon-box">📖</div>
+                <h3 class="fw-bold mb-3">Student Portal</h3>
+                <p class="text-muted mb-4">Discover new titles, request books instantly, and build your personal digital shelf.</p>
+                <div class="mt-auto d-grid gap-3">
+                    <a href="/login" class="btn btn-student btn-portal">Sign In to Library</a>
+                    <a href="/register" class="btn btn-outline-secondary btn-portal border-2">New Student? Register</a>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-5">
+            <div class="portal-card">
+                <div class="sound-wave"></div>
+                <div class="icon-box">🔐</div>
+                <h3 class="fw-bold mb-3">Administration</h3>
+                <p class="text-muted mb-4">Authorized access for librarians to manage sections, curate books, and analyze usage.</p>
+                <div class="mt-auto d-grid gap-3">
+                    <a href="/librarian_login" class="btn btn-dark btn-portal">Librarian Login</a>
+                    <div style="height: 56px;"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="mt-5 pt-4">
+        <div class="d-flex align-items-center justify-content-center gap-3 text-white-50 small">
+            <span>Built for Modern Learning</span>
+            <span style="font-size: 1.5rem;">•</span>
+            <span>24/7 Access</span>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Create floating particles
+    function createParticles() {
+        const container = document.getElementById('particles');
+        const particleCount = 50;
+        
+        for (let i = 0; i < particleCount; i++) {
+            const particle = document.createElement('div');
+            particle.classList.add('particle');
+            
+            // Random properties
+            const size = Math.random() * 20 + 5;
+            const duration = Math.random() * 20 + 10;
+            const delay = Math.random() * 20;
+            const x = Math.random() * 100;
+            
+            particle.style.width = `${size}px`;
+            particle.style.height = `${size}px`;
+            particle.style.left = `${x}%`;
+            particle.style.animationDuration = `${duration}s`;
+            particle.style.animationDelay = `${delay}s`;
+            particle.style.opacity = Math.random() * 0.3 + 0.1;
+            
+            // Random gradient background
+            const colors = [
+                'rgba(255, 255, 255, 0.1)',
+                'rgba(255, 204, 51, 0.2)',
+                'rgba(102, 126, 234, 0.2)',
+                'rgba(118, 75, 162, 0.2)'
+            ];
+            particle.style.background = colors[Math.floor(Math.random() * colors.length)];
+            
+            container.appendChild(particle);
+        }
+    }
+
+    // Mouse parallax effect
+    function initParallax() {
+        document.addEventListener('mousemove', (e) => {
+            const cards = document.querySelectorAll('.portal-card');
+            const mouseX = e.clientX / window.innerWidth;
+            const mouseY = e.clientY / window.innerHeight;
+            
+            cards.forEach(card => {
+                const speed = 20;
+                const x = (mouseX * speed) - speed/2;
+                const y = (mouseY * speed) - speed/2;
+                
+                card.style.transform = `translate(${x}px, ${y}px)`;
+            });
+        });
+    }
+
+    // Ripple effect for buttons
+    function initRippleButtons() {
+        const buttons = document.querySelectorAll('.btn-portal');
+        
+        buttons.forEach(button => {
+            button.addEventListener('click', function(e) {
+                const ripple = document.createElement('span');
+                const rect = this.getBoundingClientRect();
+                const size = Math.max(rect.width, rect.height);
+                const x = e.clientX - rect.left - size/2;
+                const y = e.clientY - rect.top - size/2;
+                
+                ripple.style.cssText = `
+                    position: absolute;
+                    border-radius: 50%;
+                    background: rgba(255, 255, 255, 0.7);
+                    transform: scale(0);
+                    animation: ripple-animation 0.6s linear;
+                    width: ${size}px;
+                    height: ${size}px;
+                    top: ${y}px;
+                    left: ${x}px;
+                    pointer-events: none;
+                `;
+                
+                this.appendChild(ripple);
+                
+                setTimeout(() => {
+                    ripple.remove();
+                }, 600);
+            });
+        });
+    }
+
+    // Add CSS for ripple animation
+    const style = document.createElement('style');
+    style.textContent = `
+        @keyframes ripple-animation {
+            to {
+                transform: scale(4);
+                opacity: 0;
+            }
+        }
+    `;
+    document.head.appendChild(style);
+
+    // Intersection Observer for animations
+    function initIntersectionObserver() {
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('animated');
+                }
+            });
+        }, {
+            threshold: 0.1
+        });
+
+        // Observe cards
+        document.querySelectorAll('.portal-card').forEach(card => {
+            observer.observe(card);
+        });
+    }
+
+    // Initialize everything when DOM is loaded
+    document.addEventListener('DOMContentLoaded', () => {
+        createParticles();
+        initParallax();
+        initRippleButtons();
+        initIntersectionObserver();
+        
+        // Add hover sound effect simulation
+        const cards = document.querySelectorAll('.portal-card');
+        cards.forEach(card => {
+            card.addEventListener('mouseenter', () => {
+                card.style.zIndex = '10';
+            });
+            card.addEventListener('mouseleave', () => {
+                card.style.zIndex = '1';
+            });
+        });
+    });
+
+    // Responsive adjustments with JavaScript
+    window.addEventListener('resize', () => {
+        const container = document.querySelector('.welcome-container');
+        if (window.innerWidth < 768) {
+            container.style.padding = '10px';
+        } else {
+            container.style.padding = '20px';
+        }
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,118 @@
+/* Base Styles */
+body {
+    background-color: #000000;
+    color: #EA445A;
+    font-family: 'Segoe UI', Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    min-height: 100vh;
+}
+
+/* Header & Branding */
+.header {
+    background: rgba(234, 68, 90, 0.1); /* Subtle red tint */
+    padding: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid rgba(0, 255, 255, 0.2);
+}
+
+h1 {
+    font-size: 32px;
+    text-align: center;
+    margin: 20px 0;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+}
+
+h3 {
+    font-size: 24px;
+    margin: 20px 2%;
+    color: aqua;
+}
+
+/* Navigation Bar */
+.navbar {
+    background-color: #00ffff !important; /* Aqua background */
+    padding: 10px 3%;
+    font-weight: bold;
+    margin-bottom: 30px;
+    border-radius: 0 0 15px 15px;
+}
+
+.navbar a {
+    color: #EA445A !important;
+    text-decoration: none;
+    transition: 0.3s;
+    padding: 5px 10px;
+}
+
+.navbar a:hover {
+    background: rgba(234, 68, 90, 0.1);
+    border-radius: 5px;
+}
+
+/* Form Styling */
+.form-control, .form-select {
+    background-color: #1a1a1a !important;
+    color: white !important;
+    border: 1px solid aqua !important;
+}
+
+.form-control:focus {
+    box-shadow: 0 0 8px aqua !important;
+}
+
+/* Cards & Containers */
+.shadow-lg {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(0, 255, 255, 0.1);
+    border-radius: 20px;
+    backdrop-filter: blur(5px);
+}
+
+.student-profile {
+    border: 2px solid aqua;
+    background: rgba(0, 255, 255, 0.05);
+    border-radius: 20px;
+    padding: 40px;
+    text-align: center;
+    max-width: 500px;
+    margin: 40px auto;
+    box-shadow: 0 10px 30px rgba(0, 255, 255, 0.1);
+}
+
+/* Table Customization */
+.table {
+    color: white !important;
+}
+
+.table-info {
+    background-color: rgba(0, 255, 255, 0.1) !important;
+    color: white !important;
+}
+
+.table-light {
+    background-color: aqua !important;
+    color: black !important;
+}
+
+/* Buttons */
+.btn-outline-info {
+    color: aqua !important;
+    border-color: aqua !important;
+}
+
+.btn-outline-info:hover {
+    background-color: aqua !important;
+    color: black !important;
+}
+
+/* Footer */
+.footer {
+    padding: 20px;
+    text-align: center;
+    color: #666;
+    font-size: 0.8rem;
+}

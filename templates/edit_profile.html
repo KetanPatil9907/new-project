@@ -1,0 +1,192 @@
+{% extends "base_layout.html" %}
+{% block title %}Edit Profile - {{ user.name }}{% endblock %}
+
+{% block content %}
+<style>
+    .profile-card {
+        background: #ffffff;
+        border-radius: 24px;
+        box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
+        overflow: hidden;
+        border: none;
+        animation: slideUp 0.6s ease-out;
+    }
+
+    .profile-header {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        padding: 50px 20px;
+        text-align: center;
+        color: white;
+    }
+
+    .profile-avatar {
+        width: 110px;
+        height: 110px;
+        background: white;
+        color: #764ba2;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 3.5rem;
+        margin: 0 auto 15px;
+        box-shadow: 0 8px 20px rgba(0,0,0,0.2);
+        border: 4px solid rgba(255, 255, 255, 0.3);
+    }
+
+    .student-subnav {
+        background: rgba(0, 0, 0, 0.2);
+        backdrop-filter: blur(10px);
+        border-radius: 15px;
+        padding: 12px 25px;
+        margin-bottom: 35px;
+        border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .nav-link-student {
+        color: white !important;
+        text-decoration: none;
+        font-weight: 500;
+        padding: 8px 16px;
+        border-radius: 10px;
+        transition: all 0.3s ease;
+    }
+
+    .nav-link-student:hover {
+        background: rgba(255, 255, 255, 0.2);
+    }
+
+    .form-label {
+        font-weight: 700;
+        color: #2d3436;
+        font-size: 0.8rem;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+    }
+
+    .readonly-field {
+        background-color: #f8f9fa !important;
+        border: 1px dashed #dee2e6 !important;
+        color: #adb5bd !important;
+        cursor: not-allowed;
+    }
+
+    .security-section {
+        background: #f1f2f6;
+        padding: 25px;
+        border-radius: 15px;
+        border-left: 5px solid #764ba2;
+    }
+
+    @keyframes slideUp {
+        from { opacity: 0; transform: translateY(20px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+</style>
+
+<nav class="student-subnav d-flex justify-content-between align-items-center flex-wrap gap-2">
+    <div class="d-flex gap-2">
+        <a href="/student_dashboard" class="nav-link-student">🏠 Dashboard</a>
+        <a href="/student_dashboard/my_books" class="nav-link-student">🔖 My Books</a>
+        <a href="/student_dashboard/all_books" class="nav-link-student">📖 Library</a>
+    </div>
+    <a href="/logout" class="btn btn-sm btn-outline-light rounded-pill px-4 fw-bold">Logout</a>
+</nav>
+
+<div class="row justify-content-center pb-5">
+    <div class="col-lg-7 col-md-10">
+        <div class="profile-card">
+
+            <div class="profile-header">
+                <div class="profile-avatar">👤</div>
+                <h2 class="fw-bold mb-1">{{ user.name }} {{ user.surname }}</h2>
+                <span class="badge bg-white text-dark rounded-pill px-3 py-2 opacity-90">
+                    ID: {{ user.rollno }}
+                </span>
+            </div>
+
+            <div class="p-4 p-md-5">
+
+                {% with messages = get_flashed_messages() %}
+                  {% if messages %}
+                    {% for message in messages %}
+                      <div class="alert alert-info border-0 shadow-sm rounded-3 py-2 mb-4">
+                          ✨ {{ message }}
+                      </div>
+                    {% endfor %}
+                  {% endif %}
+                {% endwith %}
+
+                <form method="POST">
+
+                    <div class="row g-3 mb-4">
+                        <div class="col-md-6">
+                            <label class="form-label">Username</label>
+                            <input type="text" class="form-control readonly-field" value="{{ user.username }}" readonly>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Registration No.</label>
+                            <input type="text" class="form-control readonly-field" value="{{ user.rollno }}" readonly>
+                        </div>
+                    </div>
+
+                    <hr class="my-4 opacity-10">
+
+                    <div class="row g-3 mb-4">
+                        <div class="col-md-6">
+                            <label class="form-label">First Name</label>
+                            <input type="text" name="name" class="form-control" value="{{ user.name }}" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Last Name</label>
+                            <input type="text" name="surname" class="form-control" value="{{ user.surname }}" required>
+                        </div>
+                    </div>
+
+                    <div class="row g-3 mb-4">
+                        <div class="col-md-6">
+                            <label class="form-label">Date of Birth</label>
+                            <input type="date" name="dob" class="form-control" value="{{ user.dateofbirth }}">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label">Gender</label>
+                            <select name="gender" class="form-select">
+                                <option value="Male" {% if user.gender == 'Male' %}selected{% endif %}>Male</option>
+                                <option value="Female" {% if user.gender == 'Female' %}selected{% endif %}>Female</option>
+                                <option value="Other" {% if user.gender == 'Other' %}selected{% endif %}>Other</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="security-section mb-4">
+                        <p class="text-primary small fw-bold mb-3 text-uppercase">🔐 Privacy & Security</p>
+
+                        <div class="mb-3">
+                            <label class="form-label">Verify Current Password</label>
+                            <input type="password" name="c_password" class="form-control" placeholder="Enter current password" required>
+                        </div>
+
+                        <div>
+                            <label class="form-label">Change Password</label>
+                            <input type="password" name="n_password" class="form-control" placeholder="Leave blank to keep current">
+                            <div class="form-text" style="font-size: 0.7rem;">
+                                Password must be at least 8 characters for better security.
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="d-grid gap-2 mt-5">
+                        <button type="submit" class="btn btn-primary shadow py-3">
+                            Update Profile Information
+                        </button>
+                        <a href="/student_dashboard" class="btn btn-link text-muted text-decoration-none small">
+                            Cancel and return to dashboard
+                        </a>
+                    </div>
+
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

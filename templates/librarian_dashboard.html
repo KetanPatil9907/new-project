@@ -1,0 +1,189 @@
+{% extends "base_layout.html" %}
+{% block title %}Librarian Dashboard - LMS{% endblock %}
+
+{% block content %}
+<style>
+    /* Dashboard Specific UI */
+    .admin-header {
+        color: white;
+        margin-bottom: 2rem;
+    }
+
+    .action-bar {
+        background: rgba(255, 255, 255, 0.15);
+        backdrop-filter: blur(10px);
+        border-radius: 20px;
+        padding: 15px 25px;
+        border: 1px solid rgba(255, 255, 255, 0.2);
+        margin-bottom: 40px;
+    }
+
+    /* Section Folder Cards */
+    .section-folder {
+        background: white;
+        border-radius: 24px;
+        padding: 30px;
+        height: 100%;
+        transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+        border: 1px solid rgba(0,0,0,0.05);
+        position: relative;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+    }
+
+    /* Folder "Tab" decoration */
+    .section-folder::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 30px;
+        width: 100px;
+        height: 6px;
+        background: #764ba2;
+        border-bottom-left-radius: 5px;
+        border-bottom-right-radius: 5px;
+    }
+
+    .section-folder:hover {
+        transform: translateY(-12px);
+        box-shadow: 0 20px 40px rgba(0,0,0,0.15);
+    }
+
+    .section-id-badge {
+        position: absolute;
+        top: 15px;
+        right: 20px;
+        font-size: 0.7rem;
+        background: #f1f2f6;
+        padding: 4px 10px;
+        border-radius: 50px;
+        font-weight: 800;
+        color: #a4b0be;
+    }
+
+    .btn-action-group {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+        margin-top: auto;
+    }
+
+    .nav-pill-custom {
+        color: white !important;
+        font-weight: 600;
+        text-decoration: none;
+        padding: 10px 20px;
+        border-radius: 50px;
+        transition: 0.3s;
+        font-size: 0.9rem;
+    }
+
+    .nav-pill-custom:hover {
+        background: rgba(255,255,255,0.25);
+        transform: scale(1.05);
+    }
+
+    .stat-pill {
+        background: rgba(255,255,255,0.1);
+        border: 1px solid rgba(255,255,255,0.2);
+        padding: 5px 15px;
+        border-radius: 50px;
+        color: white;
+        font-size: 0.8rem;
+    }
+</style>
+
+<div class="d-flex justify-content-between align-items-start admin-header">
+    <div>
+        <h1 class="fw-bold mb-1">Librarian Dashboard</h1>
+        <div class="d-flex gap-2">
+            <span class="stat-pill">📂 {{ sections|length }} Sections</span>
+            <span class="stat-pill">✨ Active Repository</span>
+        </div>
+    </div>
+    <div class="d-flex gap-2">
+        <a href="/logout" class="btn btn-danger btn-custom shadow-sm px-4 rounded-pill">Logout</a>
+    </div>
+</div>
+
+<div class="action-bar d-flex justify-content-between align-items-center flex-wrap gap-4 shadow-lg">
+    <div class="d-flex gap-1 flex-wrap">
+        <a href="/librarian_dashboard/add_section" class="nav-pill-custom">📁 New Section</a>
+        <a href="/librarian_dashboard/add_books" class="nav-pill-custom">📚 New Book</a>
+        <a href="/librarian_dashboard/pending_requests" class="nav-pill-custom">⏳ Requests</a>
+        <a href="/librarian_dashboard/librarian_stats" class="nav-pill-custom">📊 Analytics</a>
+    </div>
+
+    <form method="POST" action="/search_books" class="flex-grow-1" style="max-width: 450px;">
+        <div class="input-group">
+            <input type="text" name="query" placeholder="Search the archives..." class="form-control border-0 rounded-start-pill px-4" required>
+            <select name="filter" class="form-select border-0 bg-light" style="max-width: 110px; font-size: 0.85rem;">
+                <option value="all">Everything</option>
+                <option value="book_name">By Book</option>
+                <option value="section">By Section</option>
+            </select>
+            <button type="submit" class="btn btn-dark rounded-end-pill px-4">Search</button>
+        </div>
+    </form>
+</div>
+
+{% with messages = get_flashed_messages() %}
+  {% if messages %}
+    <div class="mb-4">
+    {% for message in messages %}
+      <div class="alert alert-light border-0 shadow-sm animate-fade py-2 px-4 rounded-pill text-dark">
+        <small>⚡ <strong>Update:</strong> {{ message }}</small>
+      </div>
+    {% endfor %}
+    </div>
+  {% endif %}
+{% endwith %}
+
+<div class="container-fluid px-0">
+    <div class="row g-4">
+        {% for section in sections %}
+        <div class="col-xl-4 col-md-6">
+            <div class="section-folder shadow-sm">
+                <span class="section-id-badge">REF:{{ section.id }}</span>
+                
+                <h3 class="fw-bold text-uppercase mb-2" style="color: #764ba2; letter-spacing: 0.5px; font-size: 1.4rem;">
+                    {{ section.name }}
+                </h3>
+                
+                <p class="text-muted small mb-4">
+                    {{ section.description[:120] }}{% if section.description|length > 120 %}...{% endif %}
+                </p>
+                
+                <div class="d-flex align-items-center mb-4 mt-2">
+                    <div class="me-auto">
+                        <small class="text-muted d-block" style="font-size: 0.7rem; text-transform: uppercase;">Cataloged On</small>
+                        <span class="fw-bold" style="font-size: 0.9rem;">{{ section.date_created }}</span>
+                    </div>
+                    <a href="/librarian_dashboard/section/{{section.id}}" class="btn btn-primary rounded-pill px-4 shadow-sm fw-bold btn-sm">
+                        View Books 📖
+                    </a>
+                </div>
+
+                <div class="btn-action-group pt-3 border-top">
+                    <a href="/librarian_dashboard/edit_section/{{section.id}}" class="btn btn-sm btn-outline-secondary rounded-pill fw-bold">
+                        Settings
+                    </a>
+                    <a href="/delete_section/{{section.id}}" class="btn btn-sm btn-outline-danger rounded-pill fw-bold" onclick="return confirm('Danger: Delete this section and all associated books?')">
+                        Remove
+                    </a>
+                </div>
+            </div>
+        </div>
+        {% else %}
+        <div class="col-12 text-center py-5">
+            <div class="bg-white bg-opacity-10 rounded-4 p-5">
+                <h2 class="text-white opacity-75 mb-3">Archive is empty</h2>
+                <p class="text-white-50">You haven't created any sections yet.</p>
+                <a href="/librarian_dashboard/add_section" class="btn btn-light btn-lg rounded-pill px-5 shadow mt-2">Create First Section</a>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

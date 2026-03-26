@@ -1,0 +1,258 @@
+{% extends "base_layout.html" %}
+{% block title %}Join Us - Library Pro{% endblock %}
+
+{% block content %}
+<style>
+    .registration-container {
+        padding: 60px 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 90vh;
+        position: relative;
+        overflow: hidden;
+        perspective: 1200px;
+    }
+
+    /* Floating animated shapes */
+    .registration-container::before,
+    .registration-container::after {
+        content: "";
+        position: absolute;
+        width: 350px;
+        height: 350px;
+        border-radius: 50%;
+        background: radial-gradient(circle, rgba(143,148,251,0.35), transparent 70%);
+        animation: float 14s infinite ease-in-out alternate;
+        z-index: 0;
+    }
+
+    .registration-container::after {
+        left: 70%;
+        top: 55%;
+        animation-delay: 5s;
+    }
+
+    @keyframes float {
+        from { transform: translateY(0) translateX(0) scale(1); }
+        to   { transform: translateY(-50px) translateX(-40px) scale(1.1); }
+    }
+
+    .registration-card {
+        background: rgba(255, 255, 255, 0.97);
+        backdrop-filter: blur(20px);
+        border-radius: 30px;
+        border: 1px solid rgba(255, 255, 255, 0.4);
+        box-shadow: 0 30px 70px rgba(0, 0, 0, 0.2);
+        overflow: hidden;
+        z-index: 2;
+        transition: transform 0.3s ease;
+        transform-style: preserve-3d;
+    }
+
+    .registration-card:hover {
+        box-shadow: 0 40px 90px rgba(78,84,200,0.35);
+    }
+
+    .reg-header {
+        background: linear-gradient(135deg, #4e54c8 0%, #8f94fb 100%);
+        padding: 40px;
+        color: white;
+        text-align: center;
+        position: relative;
+        overflow: hidden;
+    }
+
+    /* Shine animation */
+    .reg-header::after {
+        content: "";
+        position: absolute;
+        width: 200%;
+        height: 200%;
+        background: linear-gradient(120deg, transparent, rgba(255,255,255,0.3), transparent);
+        transform: rotate(25deg);
+        animation: shine 6s infinite linear;
+    }
+
+    @keyframes shine {
+        from { transform: translateX(-100%) rotate(25deg); }
+        to   { transform: translateX(100%) rotate(25deg); }
+    }
+
+    .section-title {
+        font-size: 0.9rem;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        color: #4e54c8;
+        border-bottom: 2px solid #e2e8f0;
+        padding-bottom: 8px;
+        margin-bottom: 20px;
+        animation: fadeUp 0.8s ease forwards;
+    }
+
+    @keyframes fadeUp {
+        from { opacity: 0; transform: translateY(15px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    .form-label {
+        font-weight: 600;
+        color: #475569;
+        font-size: 0.85rem;
+        margin-bottom: 6px;
+    }
+
+    .form-control, .form-select {
+        border-radius: 12px;
+        border: 2px solid #e2e8f0;
+        padding: 12px 15px;
+        background-color: #f8fafc;
+        transition: all 0.3s ease;
+    }
+
+    .form-control:focus, .form-select:focus {
+        background-color: #fff;
+        border-color: #4e54c8;
+        box-shadow: 0 0 18px rgba(78,84,200,0.25);
+        transform: scale(1.02);
+        outline: none;
+    }
+
+    .btn-register {
+        background: linear-gradient(135deg, #4e54c8 0%, #8f94fb 100%);
+        border: none;
+        color: white;
+        padding: 12px 35px;
+        border-radius: 12px;
+        font-weight: 700;
+        transition: all 0.3s ease;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .btn-register::after {
+        content: "";
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        background: rgba(255,255,255,0.25);
+        top: 0;
+        left: -100%;
+        transition: left 0.4s ease;
+    }
+
+    .btn-register:hover::after { left: 100%; }
+
+    .btn-register:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 15px 25px rgba(78,84,200,0.4);
+    }
+
+    .back-link {
+        color: #94a3b8;
+        font-size: 0.9rem;
+        transition: all 0.2s ease;
+    }
+
+    .back-link:hover {
+        color: #4e54c8;
+        transform: translateX(-4px);
+    }
+
+    @media (max-width: 768px) {
+        .registration-card { border-radius: 22px; }
+    }
+</style>
+
+<div class="container registration-container">
+    <div class="col-lg-9 col-xl-8">
+        
+        {% with messages = get_flashed_messages(with_categories=true) %}
+          {% if messages %}
+            <div class="mb-4">
+            {% for category, message in messages %}
+              <div class="alert alert-{{ 'danger' if category == 'error' else 'primary' }} border-0 shadow-sm rounded-4 py-3 px-4 text-center animate-fade">
+                {{ message }}
+              </div>
+            {% endfor %}
+            </div>
+          {% endif %}
+        {% endwith %}
+
+        <div class="registration-card">
+            <div class="reg-header">
+                <div class="mb-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" fill="currentColor" viewBox="0 0 16 16">
+                        <path d="M1 14s-1 0-1-1 1-4 6-4 6 3 6 4-1 1-1 1zm5-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6"/>
+                        <path fill-rule="evenodd" d="M13.5 5a.5.5 0 0 1 .5.5V7h1.5a.5.5 0 0 1 0 1H14v1.5a.5.5 0 0 1-1 0V8h-1.5a.5.5 0 0 1 0-1H13V5.5a.5.5 0 0 1 .5-.5"/>
+                    </svg>
+                </div>
+                <h2 class="fw-bold mb-1">Create Student Account</h2>
+                <p class="small opacity-80 mb-0">Join our library network in just a few steps</p>
+            </div>
+
+            <!-- FORM (unchanged backend) -->
+            <form method="POST" class="p-4 p-md-5">
+                <div class="row g-5">
+                    <div class="col-md-6">
+                        <h6 class="section-title">Step 1: Account Access</h6>
+                        <div class="mb-3">
+                            <label class="form-label">Username</label>
+                            <input type="text" name="username" class="form-control" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Password</label>
+                            <input type="password" name="password" class="form-control" required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Roll Number</label>
+                            <input type="text" name="rollno" class="form-control" required>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <h6 class="section-title">Step 2: Personal Details</h6>
+                        <div class="row">
+                            <div class="col-6 mb-3">
+                                <input type="text" name="name" class="form-control" placeholder="First Name" required>
+                            </div>
+                            <div class="col-6 mb-3">
+                                <input type="text" name="surname" class="form-control" placeholder="Last Name" required>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <input type="date" name="dob" class="form-control" required>
+                        </div>
+                        <div class="mb-3">
+                            <select name="gender" class="form-select" required>
+                                <option value="" selected disabled>Select Gender</option>
+                                <option>Male</option>
+                                <option>Female</option>
+                                <option>Other</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-5 pt-4 border-top d-flex flex-column flex-md-row justify-content-between align-items-center gap-3">
+                    <a href="/" class="back-link text-decoration-none">Back to Home</a>
+                    <button type="submit" class="btn btn-register shadow-sm">Complete Registration</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    const regCard = document.querySelector(".registration-card");
+    document.addEventListener("mousemove", (e) => {
+        const x = (window.innerWidth / 2 - e.pageX) / 40;
+        const y = (window.innerHeight / 2 - e.pageY) / 40;
+        regCard.style.transform = `rotateY(${x}deg) rotateX(${y}deg)`;
+    });
+    document.addEventListener("mouseleave", () => {
+        regCard.style.transform = "rotateY(0deg) rotateX(0deg)";
+    });
+</script>
+
+{% endblock %}
